@@ -4,8 +4,9 @@ from telegram.ext import Application , CommandHandler , MessageHandler , filters
 TOKEN:Final='7039529223:AAEJjd_FlKhVf4yM8ChIKdYtWPEc390xpB4'
 BOT_USERNAME:Final='@srisatb_bot'
 
-async def start_command(update:Update, context:ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("I know that you don't have work?")
+async def prompt_command(update:Update, context:ContextTypes.DEFAULT_TYPE):
+    pass
+    #await update.message.reply_text("I know that you don't have work?")
 
 async def help_command(update:Update, context:ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text("what the fuck wrong with you man!!!!!!")
@@ -45,7 +46,7 @@ async def handle_message(update:Update, context: ContextTypes.DEFAULT_TYPE):
    async def error (update:Update, context: ContextTypes.DEFULT_type):
     print(f'Update{update}caused error{context.error}')
 
-    if __name__=='srisatb_bot':
+if __name__=='main':
      print('Starting bot....')
     app=Application.builder.token(TOKEN).build()
 #commends
