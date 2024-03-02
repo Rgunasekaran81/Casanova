@@ -9,7 +9,7 @@ TOKEN:Final = getenv("apiToken")
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     userprompt = update.message.text[9:]
     print(userprompt)
-    await update.message.reply_text('under_development')
+    await update.message.reply_text('under_development', reply_to_message_id=update.message.id)
 
 async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
@@ -18,6 +18,7 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
         /help
         /imagine [prompt] (under development)   
                                     """)
+    
 
 if __name__=='__main__':
     app=Application.builder().token(TOKEN).build()
