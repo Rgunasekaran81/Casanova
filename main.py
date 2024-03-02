@@ -6,7 +6,9 @@ from telegram.ext import Application , CommandHandler , MessageHandler , filters
 TOKEN:Final = getenv("apiToken")
    
    
-async def imagine_command(update:Update,context: ContextTypes.DEFAULT_TYPE):
+async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
+    userprompt = update.message.text[9:]
+    print(userprompt)
     await update.message.reply_text('under_development')
 
 async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
