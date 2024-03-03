@@ -48,7 +48,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             pass
         else:
             showwarning()
-            
+
     if(command[0] == "login"):
         if(len(command) == 1):
             await telebot.send_message(chat_id=update.message.chat_id, text="type '/root login <username> <password>' to login", reply_to_message_id=update.message.id)
@@ -95,7 +95,18 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
    
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     userprompt = update.message.text[9:]
-    print(userprompt)
+    with open("database.json", "r") as database:
+            data = json.load(database)
+            userprompts = data[update.message.from_user.first_name+update.message.from_user.last_name]["prompt"]
+            if(len(userprompts) < 10):
+                userprompts.append(userprompt)
+            else:
+                userprompts[0] = userprompt
+            data[update.message.from_user.first_name+update.message.from_user.last_name]["prompt"] = userprompts 
+            with open("database.json", "w") as database:
+                json.dump(data, database, indent = 4)
+            print(userprompt)    
+
     botreply = await telebot.send_message(chat_id=update.message.chat_id, text='loading.  ', reply_to_message_id=update.message.id)
 
     sleep(1)
