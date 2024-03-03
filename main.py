@@ -18,6 +18,18 @@ telebot = Bot(TOKEN)
 def getusername(update:Update, split="") -> str:
     return update.message.from_user.first_name+split+update.message.from_user.last_name
 
+# read database
+def read_database(filename:str) -> dict:
+    data = {}
+    with open(filename, "r") as database:
+        data = json.load(database)
+    return data 
+
+# write database
+def write_database(filename:str, data) -> None: 
+    with open(filename, "w") as database:
+        json.dump(data, database, indent = 4)
+
 # to send message warning to user
 async def showwarning(update:Update, string:str="") -> None:
     pass
@@ -32,21 +44,18 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             showwarning()
         elif(len(command) == 3):
             username = getusername(update)
-            with open("database.json", "r") as database:
-                data = json.load(database)
-                data[username] = {"password":command[2], "prompt":[]}
-                with open("database.json", "w") as database:
-                    json.dump(data, database, indent = 4)
+            data = read_database("databse.json")
+            data[username] = {"password":command[2], "prompt":[]}
+            write_database("database.json", data)
+            
     # command to reset password
     elif(command[0] == "reset" and command[1] == "password"):
         if(len(command) == 4):
-            with open("database.json", "r") as database:
-                    data = json.load(database)
-                    username = getusername(update) 
-                    if(command[2] == data[username]["password"]):
-                        data[username]["password"] = command[3]
-                        with open("database.json", "w") as database:
-                            json.dump(data, database, indent = 4)
+            data = read_database("database.json")
+            username = getusername(update) 
+            if(command[2] == data[username]["password"]):
+                data[username]["password"] = command[3]
+                write_database("database.json", data)
         elif(len(command == 3)):
             pass
         else:
@@ -68,14 +77,17 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 # imagine command to get prompt and send image
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     userprompt = update.message.text[9:]
+    data = read_database("database.json")
+    userprompts = data[getusername(update)]["prompt"]
+    if(len(userprompts) < 10):
+        userprompts.append(userprompt)
+    else:
+        userprompts[0] = userprompt
+    data[getusername(update)]["prompt"] = userprompts 
+    write_database("database.json", data)
     with open("database.json", "r") as database:
             data = json.load(database)
-            userprompts = data[getusername(update)]["prompt"]
-            if(len(userprompts) < 10):
-                userprompts.append(userprompt)
-            else:
-                userprompts[0] = userprompt
-            data[getusername(update)]["prompt"] = userprompts 
+           
             with open("database.json", "w") as database:
                 json.dump(data, database, indent = 4)
             print(userprompt)    
