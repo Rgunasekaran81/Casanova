@@ -1,3 +1,4 @@
+import json
 from os import getenv
 from typing import Final
 from telegram import Bot
@@ -12,7 +13,18 @@ load_dotenv()
 
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
-
+ 
+async def start_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
+    Username, password = update.message.text.replace("/start ", "").split(", ") #[rahul, 123]
+    print(Username , password)
+    
+    data={
+        Username:[password]
+    }
+    database = open("database.json", "a") 
+    json.dump(data, database, indent = 4) 
+    database.close() 
+      
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     userprompt = update.message.text[9:]
     print(userprompt)
@@ -37,4 +49,6 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
 if __name__=='__main__':
     app=Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler('imagine',imagine_command))
+    app.add_handler(CommandHandler('start',start_command))
     app.run_polling(poll_interval=3)
+
