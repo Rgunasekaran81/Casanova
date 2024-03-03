@@ -53,11 +53,16 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         else:
             showwarning()
 
-    elif(command == "show prompt"):
-        pass
-    elif(command == "delete prompt"):
-        pass
-    elif(command == "delete user"):
+    elif(command[1] == "prompt"):
+        with open("database.json", "r") as database:
+                data = json.load(database)
+                if(command[0] == "show"):
+                #    prompt = data[telebot.]
+                 #   await telebot.send_message(chat_id=update.message.chat_id, text=, reply_to_message_id=update.message.id)
+                    pass
+                elif(command[1] == "delete"):
+                    pass
+    elif(command == "delete userdata"):
         pass
    
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
