@@ -32,6 +32,20 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 with open("database.json", "w") as database:
                     json.dump(data, database, indent = 4)
 
+    if(command[0] =="set"and command[1] == "password"):
+        if(len(command) == 4):
+            with open("database.json", "r") as database:
+                    data = json.load(database)
+                    username = update.message.from_user.first_name+update.message.from_user.last_name 
+                    if(command[2] == data[username]["password"]):
+                        data[username]["password"] =command[3]
+                        with open("database.json", "w") as database:
+                            json.dump(data, database, indent = 4)
+        elif(len(command == 3)):
+            pass
+        else:
+            showwarning()
+            
     if(command[0] == "login"):
         if(len(command) == 1):
             await telebot.send_message(chat_id=update.message.chat_id, text="type '/root login <username> <password>' to login", reply_to_message_id=update.message.id)
