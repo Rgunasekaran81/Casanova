@@ -17,10 +17,12 @@ telebot = Bot(TOKEN)
 async def start_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     Username, password = update.message.text.replace("/start ", "").split(", ") #[rahul, 123]
     #print(Username , password)
-    
-    with open("database.json", "r+") as database:
+
+    data = {}
+    with open("database.json", "r") as database:
         data = json.load(database)
-        data[Username] = [password]
+        data[Username] = [password]   
+    with open("database.json", "w") as database:
         json.dump(data, database, indent = 4)
  
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
