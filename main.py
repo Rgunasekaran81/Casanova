@@ -14,26 +14,45 @@ load_dotenv()
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
 
-async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
-    command = update.message.text.replace("/root ", "")
-    print(command)
-    if("login" in command):
-        if(len(command)==5):
-            await telebot.send_message(chat_id=update.message.chat_id, text='<username>, <password>\nEnter your user name and password in this format ', reply_to_message_id=update.message.id)
-        else:
-            pass
-        Username, password = update.message.text.replace("/root ", "").split(", ") #[rahul, 123]
-        print(Username , password)
+async def showwarning(update:Update, string:str="") -> None:
+    pass
 
-        data = {}
-        with open("database.json", "r") as database:
-            data = json.load(database)
-            data[Username] = [password]   
-        with open("database.json", "w") as database:
-            json.dump(data, database, indent = 4)
- 
-    elif(command == "register"):
-        pass
+async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    command = update.message.text.replace("/root ", "").split()
+
+    # going to change the login/register username, password system. 
+    if(command[0] == "login"):
+        if(len(command) == 1):
+            await telebot.send_message(chat_id=update.message.chat_id, text="type '/root login <username> <password>' to login", reply_to_message_id=update.message.id)
+        elif(len(command) == 3):
+            Username, password = command[1], command[2]
+            data = {}
+            with open("database.json", "r") as database:
+                data = json.load(database)
+                if(data[Username] != [password]):
+                    showwarning("password does not match")
+                    return
+                # add user as logged in device
+        else:
+            showwarning()
+    
+    elif(command[0] == "register"):
+        if(len(command) == 1):
+            await telebot.send_message(chat_id=update.message.chat_id, text="type '/root register <username> <password>' to login", reply_to_message_id=update.message.id)
+        elif(len(command) == 3):
+            username, password = command[1], command[2]
+            data = {}
+            with open("database.json", "r") as database:
+                data = json.load(database)
+                if(username in data):
+                    showwarning("User already exist")
+                    return
+                data[username] = [password]
+            with open("database.json", "w") as database:
+                json.dump(data, database, indent = 4)
+        else:
+            showwarning()
+
     elif(command == "show prompt"):
         pass
     elif(command == "delete prompt"):
@@ -41,7 +60,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     elif(command == "delete user"):
         pass
    
-async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
+async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     userprompt = update.message.text[9:]
     print(userprompt)
     botreply = await telebot.send_message(chat_id=update.message.chat_id, text='loading.  ', reply_to_message_id=update.message.id)
@@ -52,7 +71,7 @@ async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     sleep(1)
     await telebot.edit_message_text(text="loading...", message_id=botreply.id, chat_id=botreply.chat_id)
 
-async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
+async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("""
     Hello i'm Casanova, Telegram bot to generate image based on prompt
     Available commands:
