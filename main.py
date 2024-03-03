@@ -14,7 +14,7 @@ load_dotenv()
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
 
-async def start_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
+async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     Username, password = update.message.text.replace("/start ", "").split(", ") #[rahul, 123]
     #print(Username , password)
 
@@ -49,6 +49,6 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE):
 if __name__=='__main__':
     app=Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler('imagine',imagine_command))
-    app.add_handler(CommandHandler('start',start_command))
+    app.add_handler(CommandHandler('root',root_command))
     app.run_polling(poll_interval=3)
 
