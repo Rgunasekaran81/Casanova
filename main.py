@@ -14,32 +14,35 @@ load_dotenv()
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
 
+# returns username
 def getusername(update:Update, split="") -> str:
     return update.message.from_user.first_name+split+update.message.from_user.last_name
 
+# to send message warning to user
 async def showwarning(update:Update, string:str="") -> None:
     pass
 
+# root command functions 
 async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     command = update.message.text.replace("/root ", "").split()
-
-    # going to change the login/register username, password system. 
+ 
+    # command to initiate user
     if(command[0] == "init" and command[1] == "user"):
         if(len(command) == 2):
             showwarning()
         elif(len(command) == 3):
-            username = update.message.from_user.first_name+update.message.from_user.last_name
+            username = getusername(update)
             with open("database.json", "r") as database:
                 data = json.load(database)
                 data[username] = {"password":command[2], "prompt":[]}
                 with open("database.json", "w") as database:
                     json.dump(data, database, indent = 4)
-
-    if(command[0] =="set"and command[1] == "password"):
+    # command to reset password
+    elif(command[0] == "reset" and command[1] == "password"):
         if(len(command) == 4):
             with open("database.json", "r") as database:
                     data = json.load(database)
-                    username = update.message.from_user.first_name+update.message.from_user.last_name 
+                    username = getusername(update) 
                     if(command[2] == data[username]["password"]):
                         data[username]["password"] = command[3]
                         with open("database.json", "w") as database:
@@ -48,39 +51,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             pass
         else:
             showwarning()
-
-    if(command[0] == "login"):
-        if(len(command) == 1):
-            await telebot.send_message(chat_id=update.message.chat_id, text="type '/root login <username> <password>' to login", reply_to_message_id=update.message.id)
-        elif(len(command) == 3):
-            Username, password = command[1], command[2]
-            data = {}
-            with open("database.json", "r") as database:
-                data = json.load(database)
-                if(data[Username] != [password]):
-                    showwarning("password does not match")
-                    return
-                # add user as logged in device
-        else:
-            showwarning()
-    
-    elif(command[0] == "register"):
-        if(len(command) == 1):
-            await telebot.send_message(chat_id=update.message.chat_id, text="type '/root register <username> <password>' to login", reply_to_message_id=update.message.id)
-        elif(len(command) == 3):
-            username, password = command[1], command[2]
-            data = {}
-            with open("database.json", "r") as database:
-                data = json.load(database)
-                if(username in data):
-                    showwarning("User already exist")
-                    return
-                data[username] = [password]
-            with open("database.json", "w") as database:
-                json.dump(data, database, indent = 4)
-        else:
-            showwarning()
-
+    # command to show/delete prompts from databse
     elif(command[1] == "prompt"):
         with open("database.json", "r") as database:
                 data = json.load(database)
@@ -90,19 +61,21 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                     pass
                 elif(command[1] == "delete"):
                     pass
-    elif(command == "delete userdata"):
+    # command to delete userdata
+    elif(command[0] == "delete" and command[1] == "userdata"):
         pass
-   
+
+# imagine command to get prompt and send image
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     userprompt = update.message.text[9:]
     with open("database.json", "r") as database:
             data = json.load(database)
-            userprompts = data[update.message.from_user.first_name+update.message.from_user.last_name]["prompt"]
+            userprompts = data[getusername(update)]["prompt"]
             if(len(userprompts) < 10):
                 userprompts.append(userprompt)
             else:
                 userprompts[0] = userprompt
-            data[update.message.from_user.first_name+update.message.from_user.last_name]["prompt"] = userprompts 
+            data[getusername(update)]["prompt"] = userprompts 
             with open("database.json", "w") as database:
                 json.dump(data, database, indent = 4)
             print(userprompt)    
@@ -115,6 +88,7 @@ async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> 
     sleep(1)
     await telebot.edit_message_text(text="loading...", message_id=botreply.id, chat_id=botreply.chat_id)
 
+# help command function
 async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("""
     Hello i'm Casanova, Telegram bot to generate image based on prompt
@@ -122,11 +96,9 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
         /help
         /imagine [prompt] (under development)   
                                     """)
-
-
+# run if main
 if __name__=='__main__':
     app=Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler('imagine',imagine_command))
     app.add_handler(CommandHandler('root',root_command))
-    app.run_polling(poll_interval=3)
-
+    app.run_polling(poll_interval=2)
