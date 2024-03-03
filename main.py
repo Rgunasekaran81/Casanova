@@ -13,18 +13,16 @@ load_dotenv()
 
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
- 
+
 async def start_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     Username, password = update.message.text.replace("/start ", "").split(", ") #[rahul, 123]
-    print(Username , password)
+    #print(Username , password)
     
-    data={
-        Username:[password]
-    }
-    database = open("database.json", "a") 
-    json.dump(data, database, indent = 4) 
-    database.close() 
-      
+    with open("database.json", "r+") as database:
+        data = json.load(database)
+        data[Username] = [password]
+        json.dump(data, database, indent = 4)
+ 
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE):
     userprompt = update.message.text[9:]
     print(userprompt)
