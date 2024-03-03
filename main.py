@@ -14,6 +14,9 @@ load_dotenv()
 TOKEN:Final = getenv("apiToken")
 telebot = Bot(TOKEN)
 
+def getusername(update:Update, split="") -> str:
+    return update.message.from_user.first_name+split+update.message.from_user.last_name
+
 async def showwarning(update:Update, string:str="") -> None:
     pass
 
@@ -38,7 +41,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                     data = json.load(database)
                     username = update.message.from_user.first_name+update.message.from_user.last_name 
                     if(command[2] == data[username]["password"]):
-                        data[username]["password"] =command[3]
+                        data[username]["password"] = command[3]
                         with open("database.json", "w") as database:
                             json.dump(data, database, indent = 4)
         elif(len(command == 3)):
