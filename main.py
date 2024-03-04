@@ -39,12 +39,24 @@ async def sendmessage(update:Update, msg:str="", replaytomsg=True) -> None:
 
 # root command functions
 async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # initiate user -> /root inti user rahul@123
+    # input -> /root inti user <password> (convert) [init, user, rahul@123]
     command = update.message.text.replace("/root ", "").split()
- 
-    # command to initiate user
-    if(command[0] == "init" and command[1] == "user"):
-        if(len(command) == 2):
-            sendmessage(update, "password missing, check /help init")
+    
+    if(command[0] == "/root"): # warning for wrong command '/root'
+        await sendmessage(update, "no argument given \ntype '/help root' to see more options")
+
+    if(len(command) == 1 and command[0] == "init"): # warning for wrong command '/root init'
+        pass
+
+    # warning for wrong command '/root user'
+    
+    # actuall command for login '/root login <username> <password>'
+    # warning for wrong command '/root login <username>'
+
+    elif(command[0] == "init" and command[1] == "user"):
+        if(len(command) == 2): # [init, user] display error when no password given
+            await sendmessage(update, "password missing, check /help init") 
         elif(len(command) == 3):
             username = getusername(update)
             data = read_database("database.json")
