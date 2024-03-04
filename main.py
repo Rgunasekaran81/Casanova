@@ -18,7 +18,7 @@ telebot = Bot(TOKEN)
 def getusername(update:Update, split="") -> str:
     username = update.message.from_user.first_name
     if(update.message.from_user.last_name):
-        username += " "+update.message.from_user.last_name
+        username += +update.message.from_user.last_name
     return username
         
 # read database
@@ -50,7 +50,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         pass
 
     # warning for wrong command '/root user'
-    
+
     # actuall command for login '/root login <username> <password>'
     # warning for wrong command '/root login <username>'
 
@@ -62,17 +62,20 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             data = read_database("database.json")
             data[username] = {"password":command[2], "prompt":[]}
             data = read_database("database.json")
-            data[username] = {"password":command[2], 
-                              "chatid":update.message.chat.id, 
-                              "logged in accounts":{getusername(update):update.message.chat.id}, 
+            data[username] = {"password":command[2],
+                              "current_login":getusername(update),
+                              "chatid":update.message.chat.id,
+                              "logged in accounts":{getusername(update):update.message.chat.id},
                               "prompt":[]}
             write_database("database.json", data)
 
     elif(command[0] == "login"):
         data = read_database("database.json")
-        if(command[1] in data):        
+        if(command[1] in data):
             if(data[command[1]]["password"] == command[2]):
                 data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
+                data[getusername(update)]["current_login"] = command[1]
+                write_database("database.json", data)
             else:
                 pass
         else:
@@ -90,16 +93,20 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             pass
         else:
             sendmessage()
+
     # command to show/delete prompts from databse
     elif(command[1] == "prompt"):
-        with open("database.json", "r") as database:
-                data = json.load(database)
-                if(command[0] == "show"):
-                #    prompt = data[telebot.]
-                 #   await telebot.send_message(chat_id=update.message.chat_id, text=, reply_to_message_id=update.message.id)
-                    pass
-                elif(command[1] == "delete"):
-                    pass
+        if(command[0] == "show"):
+            data = read_database("database.json")
+            current_login = data[getusername(update)]["current_login"]
+            prompts = data[current_login]["prompt"]
+            displayprompt = ""
+            for i in range(len(prompts)):
+                displayprompt += prompts[i]+"\n"
+            await sendmessage(update, displayprompt)
+
+        elif(command[1] == "delete"):
+            pass
     # command to delete userdata
     elif(command[0] == "delete" and command[1] == "userdata"):
         pass
