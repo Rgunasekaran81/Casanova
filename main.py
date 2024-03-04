@@ -56,9 +56,16 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                               "prompt":[]}
             write_database("database.json", data)
 
-    #elif(command[0] == "login" ):
-        
-            
+    elif(command[0] == "login"):
+        data = read_database("database.json")
+        if(command[1] in data):        
+            if(data[command[1]]["password"] == command[2]):
+                data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
+            else:
+                pass
+        else:
+            pass
+
     # command to reset password
     elif(command[0] == "reset" and command[1] == "password"):
         if(len(command) == 4):
