@@ -31,20 +31,20 @@ def write_database(filename:str, data) -> None:
         json.dump(data, database, indent = 4)
 
 # to send message warning to user
-async def showwarning(update:Update, string:str="") -> None:
-    pass
+async def sendmessage(update:Update, msg:str="", replaytomsg=True) -> None:
+    await update.message.reply_text(msg, reply_to_message_id=update.message.message_id)
 
-# root command functions 
+# root command functions
 async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     command = update.message.text.replace("/root ", "").split()
  
     # command to initiate user
     if(command[0] == "init" and command[1] == "user"):
         if(len(command) == 2):
-            showwarning()
+            sendmessage(update, "password missing, check /help init")
         elif(len(command) == 3):
             username = getusername(update)
-            data = read_database("databse.json")
+            data = read_database("database.json")
             data[username] = {"password":command[2], "prompt":[]}
             write_database("database.json", data)
             
@@ -52,14 +52,14 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     elif(command[0] == "reset" and command[1] == "password"):
         if(len(command) == 4):
             data = read_database("database.json")
-            username = getusername(update) 
+            username = getusername(update)
             if(command[2] == data[username]["password"]):
                 data[username]["password"] = command[3]
                 write_database("database.json", data)
         elif(len(command == 3)):
             pass
         else:
-            showwarning()
+            sendmessage()
     # command to show/delete prompts from databse
     elif(command[1] == "prompt"):
         with open("database.json", "r") as database:
@@ -76,7 +76,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 # imagine command to get prompt and send image
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    userprompt = update.message.text[9:]
+    userprompt = update.message.text.replace("/imagine ", "")
     data = read_database("database.json")
     userprompts = data[getusername(update)]["prompt"]
     if(len(userprompts) < 10):
@@ -92,25 +92,25 @@ async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 json.dump(data, database, indent = 4)
             print(userprompt)    
 
-    botreply = await telebot.send_message(chat_id=update.message.chat_id, text='loading.  ', reply_to_message_id=update.message.id)
-
-    sleep(1)
-    await telebot.edit_message_text(text="loading.. ", message_id=botreply.id, chat_id=botreply.chat_id)
-
-    sleep(1)
-    await telebot.edit_message_text(text="loading...", message_id=botreply.id, chat_id=botreply.chat_id)
+    #await telebot.edit_message_text(text="loading...", message_id=botreply.id, chat_id=botreply.chat_id)
 
 # help command function
 async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("""
-    Hello i'm Casanova, Telegram bot to generate image based on prompt
-    Available commands:
-        /help
-        /imagine [prompt] (under development)   
-                                    """)
+    print(update.message.chat.id, update.message.chat_id)
+    await sendmessage(update, """
+    Casanova is a bot powered by Python to generate image
+    List of commands:
+        -> /root
+        -> /imagine
+    type '/help [command]' to get more details about the command
+    """)
+
 # run if main
 if __name__=='__main__':
     app=Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler('imagine',imagine_command))
-    app.add_handler(CommandHandler('root',root_command))
+    
+    app.add_handler(CommandHandler("imagine", imagine_command))
+    app.add_handler(CommandHandler("root", root_command))
+    app.add_handler(CommandHandler("help", help_command))
+
     app.run_polling(poll_interval=2)
