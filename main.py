@@ -16,8 +16,11 @@ telebot = Bot(TOKEN)
 
 # returns username
 def getusername(update:Update, split="") -> str:
-    return update.message.from_user.first_name+split+update.message.from_user.last_name
-
+    username = update.message.from_user.first_name
+    if(update.message.from_user.last_name):
+        username += " "+update.message.from_user.last_name
+    return username
+        
 # read database
 def read_database(filename:str) -> dict:
     data = {}
@@ -44,9 +47,15 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             showwarning()
         elif(len(command) == 3):
             username = getusername(update)
-            data = read_database("databse.json")
-            data[username] = {"password":command[2], "prompt":[]}
+            data = read_database("database.json")
+            data[username] = {"password":command[2], 
+                              "chatid":update.message.chat.id, 
+                              "logged in accounts":{getusername(update):update.message.chat.id}, 
+                              "prompt":[]}
             write_database("database.json", data)
+
+    #elif(command[0] == "login" ):
+        
             
     # command to reset password
     elif(command[0] == "reset" and command[1] == "password"):
