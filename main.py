@@ -37,7 +37,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 await sendmessage(update, "init user requires 1 argument <password> \ntype '/help root' to see more options") 
             elif(len(command) == 3):
                 if(len(command[2]) < 8 or not command[2].isalnum() or len(command[2]) > 15):
-                    await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                    await sendmessage(update, "password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
                     return 
                 username = getusername(update)
                 data = read_database("database.json")
@@ -47,7 +47,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                               "logged in accounts":{getusername(update):update.message.chat.id},
                               "prompt":[]}
                 write_database("database.json", data)
-                await sendmessage(f"User initialized. Username:{username}")
+                await sendmessage(update, f"User initialized. \nUsername: {username}")
 
     elif(command[0] == "login"):
         if(len(command) < 3):
