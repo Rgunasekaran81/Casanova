@@ -1,41 +1,16 @@
-import json
+from casanova_util import *
 from os import getenv
 from typing import Final
-from telegram import Bot
-from telegram import Bot
 from telegram import Update
+#from telegram import Bot
 from telegram.ext import Application , CommandHandler , MessageHandler , filters ,ContextTypes
-
-from time import sleep # temp
-
 from dotenv import load_dotenv
 load_dotenv()
 
+from time import sleep # temp
+
 TOKEN:Final = getenv("apiToken")
-telebot = Bot(TOKEN)
-
-# returns username
-def getusername(update:Update, split="") -> str:
-    username = update.message.from_user.first_name
-    if(update.message.from_user.last_name):
-        username += +update.message.from_user.last_name
-    return username
-        
-# read database
-def read_database(filename:str) -> dict:
-    data = {}
-    with open(filename, "r") as database:
-        data = json.load(database)
-    return data 
-
-# write database
-def write_database(filename:str, data) -> None: 
-    with open(filename, "w") as database:
-        json.dump(data, database, indent = 4)
-
-# to send message warning to user
-async def sendmessage(update:Update, msg:str="", replaytomsg=True) -> None:
-    await update.message.reply_text(msg, reply_to_message_id=update.message.message_id)
+#telebot = Bot(TOKEN)
 
 # root command functions
 async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -57,9 +32,6 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # warning for wrong command '/root login <username>'
     elif (command[0] == "login" and len(command) < 3):
         await sendmessage(update, "login requires two arguments username and password \ntype '/help root' to see more options")
-
-
-
 
     elif(command[0] == "init" and command[1] == "user"):
         if(len(command) == 2): # [init, user] display error when no password given
