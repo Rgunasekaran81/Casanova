@@ -31,10 +31,10 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # actual command execution
     elif(command[0] == "init"):
         if(len(command) == 1):
-            await sendmessage(update, "init requires atleast 1 arguments \ntype '/help root' to see more options")
+            await sendmessage(update, "init requires atleast 1 argument (user) \ntype '/help root' to see more options")
         elif(command[1] == "user"):
             if(len(command) == 2): # [init, user] display error when no password given
-                await sendmessage(update, "password missing, check /help init") 
+                await sendmessage(update, "init user requires 1 argument <password> \ntype '/help root' to see more options") 
             elif(len(command) == 3):
                 username = getusername(update)
                 data = read_database("database.json")
@@ -44,10 +44,11 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                               "logged in accounts":{getusername(update):update.message.chat.id},
                               "prompt":[]}
                 write_database("database.json", data)
+                await sendmessage(f"User initialized. Username:{username}")
 
     elif(command[0] == "login"):
         if(len(command) < 3):
-            await sendmessage(update, "login requires 2 arguments username and password \ntype '/help root' to see more options")
+            await sendmessage(update, "login requires 2 arguments <username> <password> \ntype '/help root' to see more options")
         else:
             data = read_database("database.json")
             if(command[1] in data):
@@ -55,26 +56,28 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                     data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
                     data[getusername(update)]["current_login"] = command[1]
                     write_database("database.json", data)
+                    await sendmessage(update, f"Successfully logged in as {command[1]}")
                 else:
-                    pass
+                    await sendmessage(update, "Wrong password")
             else:
-                pass
+                await sendmessage(update, "User not found in database")
 
     # command to reset password
     elif(command[0] == "reset"):
         if(len(command) == 1):
             await sendmessage(update, "reset requires atleast 1 arguments \ntype '/help root' to see more options")
         elif(command[1] == "password"):
-
             if(len(command) < 3):
                 await sendmessage(update, "reset password requires atleast 1 arguments '[old password] <new password>' \ntype '/help root' to see more options")
-
             elif(len(command) == 4):
                 data = read_database("database.json")
                 username = getusername(update)
                 if(command[2] == data[username]["password"]):
                     data[username]["password"] = command[3]
                     write_database("database.json", data)
+                    await sendmessage(update, "Password changed successfully")
+                else:
+                    await sendmessage(update, "Old password didn't match")
             elif(len(command == 3)):
                 pass
 
