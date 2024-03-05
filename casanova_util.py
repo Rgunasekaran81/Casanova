@@ -12,7 +12,7 @@ def getusername(update:Update) -> str:
     """
     username = update.message.from_user.first_name
     if(update.message.from_user.last_name):
-        username += +update.message.from_user.last_name
+        username += update.message.from_user.last_name
     return username
         
 def read_database(filename:str) -> dict:
