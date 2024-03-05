@@ -36,6 +36,9 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             if(len(command) == 2): # [init, user] display error when no password given
                 await sendmessage(update, "init user requires 1 argument <password> \ntype '/help root' to see more options") 
             elif(len(command) == 3):
+                if(len(command[2]) < 8 or not command[2].isalnum() or len(command[2]) > 15):
+                    await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                    return 
                 username = getusername(update)
                 data = read_database("database.json")
                 data[username] = {"password":command[2],
@@ -73,13 +76,18 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 data = read_database("database.json")
                 username = getusername(update)
                 if(command[2] == data[username]["password"]):
+                    if(len(command[3]) < 8 or not command[3].isalnum() or len(command[3]) > 15):
+                        await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                        return 
                     data[username]["password"] = command[3]
                     write_database("database.json", data)
                     await sendmessage(update, "Password changed successfully")
                 else:
                     await sendmessage(update, "Old password didn't match")
             elif(len(command == 3)):
-                pass
+                if(len(command[2]) < 8 or not command[2].isalnum() or len(command[2]) > 15):
+                    await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                    return 
 
     # command to show/delete prompts from databse
     elif(command[0] == "prompt"):
@@ -141,7 +149,7 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
     elif(command[0] == "root"):
         await sendmessage(update, """
         Root command gives you access and manage user data.
-        List of root commads:
+        List of root commands:
             -> init (user) <password> - To initalize a new user.
             -> login <username> <password> - To login into a account.
             -> prompt (show, delete) [number] - 
@@ -149,16 +157,10 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
         """)
 
     # /help imagine
-    elif():
-        pass
-
-
-
-    """
-    /help root -> full details about the root command and it's argument
-    /help imagine -> full details about the imagine command
-    """
-
+    elif(command[0] == "imagine"):
+        await sendmessage(update, """ 
+        Imagine command in casanova_bot help's bots to generaye image.
+        Imagin command requires 1 argument that is user  prompt""")
 
 # run if main
 if __name__=='__main__':
