@@ -36,6 +36,9 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             if(len(command) == 2): # [init, user] display error when no password given
                 await sendmessage(update, "password missing, check /help init") 
             elif(len(command) == 3):
+                if(len(command[2]) < 8 or not command[2].isalnum() or len(command[2]) > 15):
+                    await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                    return 
                 username = getusername(update)
                 data = read_database("database.json")
                 data[username] = {"password":command[2],
@@ -73,10 +76,15 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 data = read_database("database.json")
                 username = getusername(update)
                 if(command[2] == data[username]["password"]):
+                    if(len(command[3]) < 8 or not command[3].isalnum() or len(command[3]) > 15):
+                        await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                        return 
                     data[username]["password"] = command[3]
                     write_database("database.json", data)
             elif(len(command == 3)):
-                pass
+                if(len(command[2]) < 8 or not command[2].isalnum() or len(command[2]) > 15):
+                    await sendmessage("password should be minimum 8 characters maximum 15 characters with mixture of alphfabets and numbers")
+                    return 
 
     # command to show/delete prompts from databse
     elif(command[0] == "prompt"):
