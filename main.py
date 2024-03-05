@@ -14,25 +14,36 @@ TOKEN:Final = getenv("apiToken")
 
 # root command functions
 async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # initiate user -> /root inti user rahul@123
-    # input -> /root inti user <password> (convert) [init, user, rahul@123]
     command = update.message.text.replace("/root ", "").split()
     
-    if(command[0] == "/root"): # warning for wrong command '/root'
+    """
+    /root  (no argument) -> 27
+    /root login (with one/no argument) -> 32
+    /root prompt (with no argument) -> 38
+    /root reset password(with no argument) -> 
+    /root (with invalid argument) -> 97
+    """
+
+    # warning for wrong command '/root'
+    if(command[0] == "/root"):
         await sendmessage(update, "no argument given \ntype '/help root' to see more options")
 
-    elif(command[0] == "init"): # warning for wrong command '/root init'
-        await sendmessage(update, "no command count \ntype '/help root' to see more options")
-
-    # warning for wrong command '/root user'
-    elif(command[0] == "user"):
-        await sendmessage(update, "no command count \ntype '/help root' to see more options")
-    
     # actuall command for login '/root login <username> <password>
     # warning for wrong command '/root login <username>'
     elif (command[0] == "login" and len(command) < 3):
         await sendmessage(update, "login requires two arguments username and password \ntype '/help root' to see more options")
 
+    # actuall command for prompt '/root prompt show/delete [num]
+    # warning for invalid prompt command
+    elif():
+        pass
+    
+    # actual command for reset password '/root reset password [old password] <newpassword>
+    # warning for invalid reset password
+    elif():
+        pass
+
+    # actual command execution
     elif(command[0] == "init" and command[1] == "user"):
         if(len(command) == 2): # [init, user] display error when no password given
             await sendmessage(update, "password missing, check /help init") 
@@ -74,8 +85,8 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             sendmessage()
 
     # command to show/delete prompts from databse
-    elif(command[1] == "prompt"):
-        if(command[0] == "show"):
+    elif(command[0] == "prompt"):
+        if(command[1] == "show"):
             data = read_database("database.json")
             current_login = data[getusername(update)]["current_login"]
             prompts = data[current_login]["prompt"]
@@ -86,9 +97,14 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
         elif(command[1] == "delete"):
             pass
+
     # command to delete userdata
     elif(command[0] == "delete" and command[1] == "userdata"):
         pass
+
+    # warning for wrong command '/root'
+    else: 
+        await sendmessage(update, f"{update.message.text} is not recognized as a command \ntype '/help root' to see more options")
 
 # imagine command to get prompt and send image
 async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
