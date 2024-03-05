@@ -44,7 +44,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 data[username] = {"password":command[2],
                               "current_login":getusername(update),
                               "chatid":update.message.chat.id,
-                              "logged in accounts":{getusername(update):update.message.chat.id},
+                              "logged_in_accounts":{getusername(update):update.message.chat.id},
                               "prompt":[]}
                 write_database("database.json", data)
                 await sendmessage(update, f"User initialized. \nUsername: {username}")
@@ -56,7 +56,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             data = read_database("database.json")
             if(command[1] in data):
                 if(data[command[1]]["password"] == command[2]):
-                    data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
+                    data[command[1]]["logged_in_accounts"][getusername(update)] = update.message.chat.id
                     data[getusername(update)]["current_login"] = command[1]
                     write_database("database.json", data)
                     await sendmessage(update, f"Successfully logged in as {command[1]}")
@@ -64,6 +64,16 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                     await sendmessage(update, "Wrong password")
             else:
                 await sendmessage(update, "User not found in database")
+
+    # command to log out
+    elif(command[0] == "logout"):
+        data = read_database("database.json")
+        username = getusername(update) 
+        del data[data[username]["current_login"]]["logged_in_accounts"][username]
+        print(data[data[username]["current_login"]])
+        data[username]["current_login"] = None
+        await sendmessage(update, "Successfully loggedout")
+        write_database("database.json", data)
 
     # command to reset password
     elif(command[0] == "reset"):
