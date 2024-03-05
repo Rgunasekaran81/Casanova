@@ -29,6 +29,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await sendmessage(update, "no argument given \ntype '/help root' to see more options")
     
     # actual command execution
+    # command to initialize
     elif(command[0] == "init"):
         if(len(command) == 1):
             await sendmessage(update, "init requires atleast 1 argument (user) \ntype '/help root' to see more options")
@@ -49,6 +50,7 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 write_database("database.json", data)
                 await sendmessage(update, f"User initialized. \nUsername: {username}")
 
+    # command to login 
     elif(command[0] == "login"):
         if(len(command) < 3):
             await sendmessage(update, "login requires 2 arguments <username> <password> \ntype '/help root' to see more options")
@@ -94,16 +96,32 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         if(len(command) < 2):
             await sendmessage(update, "prompt requires 1 argument 'show/delete' \ntype '/help root' to see more options")
         elif(command[1] == "show"):
+            num = 1
+            if(len(command) == 3):
+                if(command[2].isnumeric()):
+                    num = int(command[2])
+                else:
+                    await sendmessage(update, "Iteration should be a number \ntype '/help root' to see more options")
+                    return
             data = read_database("database.json")
             current_login = data[getusername(update)]["current_login"]
             prompts = data[current_login]["prompt"]
             displayprompt = ""
-            for i in range(len(prompts)):
-                displayprompt += prompts[i]+"\n"
+            for i in range(min(len(prompts), num)):
+                displayprompt += str(i+1)+") "+prompts[i]+"\n"
             await sendmessage(update, displayprompt)
 
         elif(command[1] == "delete"):
-            pass
+            num = 1
+            if(len(command) == 3):
+                if(command[2].isnumeric()):
+                    num = int(command[2])
+                else:
+                    await sendmessage(update, "Iteration should be a number \ntype '/help root' to see more options")
+                    return
+            data = read_database("database.json")
+            current_login = data[getusername(update)]["current_login"]
+            num = min(len(data[current_login]["prompt"]), num)
 
     # command to delete userdata
     elif(command[0] == "delete" and command[1] == "userdata"):
@@ -145,6 +163,7 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
             -> /imagine -> To generate image.
         type '/help [command]' to get more details about the command.
         """)
+
     # /help root
     elif(command[0] == "root"):
         await sendmessage(update, """
