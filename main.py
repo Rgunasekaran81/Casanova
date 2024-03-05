@@ -138,7 +138,7 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
     elif(command[0] == "root"):
         await sendmessage(update, """
         Root command gives you access and manage user data.
-        List of root commads:
+        List of root commands:
             -> init (user) <password> - To initalize a new user.
             -> login <username> <password> - To login into a account.
             -> prompt (show, delete) [number] - 
@@ -146,16 +146,10 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
         """)
 
     # /help imagine
-    elif():
-        pass
-
-
-
-    """
-    /help root -> full details about the root command and it's argument
-    /help imagine -> full details about the imagine command
-    """
-
+    elif(command[0] == "imagine"):
+        await sendmessage(update, """ 
+        Imagine command in casanova_bot help's bots to generaye image.
+        Imagin command requires 1 argument that is user  prompt""")
 
 # run if main
 if __name__=='__main__':
