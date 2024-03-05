@@ -27,66 +27,62 @@ async def root_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # warning for wrong command '/root'
     if(command[0] == "/root"):
         await sendmessage(update, "no argument given \ntype '/help root' to see more options")
-
-    # actuall command for login '/root login <username> <password>
-    # warning for wrong command '/root login <username>'
-    elif (command[0] == "login" and len(command) < 3):
-        await sendmessage(update, "login requires two arguments username and password \ntype '/help root' to see more options")
-
-    # actuall command for prompt '/root prompt show/delete [num]
-    # warning for invalid prompt command
-    elif():
-        pass
     
-    # actual command for reset password '/root reset password [old password] <newpassword>
-    # warning for invalid reset password
-    elif():
-        pass
-
     # actual command execution
-    elif(command[0] == "init" and command[1] == "user"):
-        if(len(command) == 2): # [init, user] display error when no password given
-            await sendmessage(update, "password missing, check /help init") 
-        elif(len(command) == 3):
-            username = getusername(update)
-            data = read_database("database.json")
-            data[username] = {"password":command[2], "prompt":[]}
-            data = read_database("database.json")
-            data[username] = {"password":command[2],
+    elif(command[0] == "init"):
+        if(len(command) == 1):
+            await sendmessage(update, "init requires atleast 1 arguments \ntype '/help root' to see more options")
+        elif(command[1] == "user"):
+            if(len(command) == 2): # [init, user] display error when no password given
+                await sendmessage(update, "password missing, check /help init") 
+            elif(len(command) == 3):
+                username = getusername(update)
+                data = read_database("database.json")
+                data[username] = {"password":command[2],
                               "current_login":getusername(update),
                               "chatid":update.message.chat.id,
                               "logged in accounts":{getusername(update):update.message.chat.id},
                               "prompt":[]}
-            write_database("database.json", data)
+                write_database("database.json", data)
 
     elif(command[0] == "login"):
-        data = read_database("database.json")
-        if(command[1] in data):
-            if(data[command[1]]["password"] == command[2]):
-                data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
-                data[getusername(update)]["current_login"] = command[1]
-                write_database("database.json", data)
+        if(len(command) < 3):
+            await sendmessage(update, "login requires 2 arguments username and password \ntype '/help root' to see more options")
+        else:
+            data = read_database("database.json")
+            if(command[1] in data):
+                if(data[command[1]]["password"] == command[2]):
+                    data[command[1]]["logged in accounts"][getusername(update)] = update.message.chat.id
+                    data[getusername(update)]["current_login"] = command[1]
+                    write_database("database.json", data)
+                else:
+                    pass
             else:
                 pass
-        else:
-            pass
 
     # command to reset password
-    elif(command[0] == "reset" and command[1] == "password"):
-        if(len(command) == 4):
-            data = read_database("database.json")
-            username = getusername(update)
-            if(command[2] == data[username]["password"]):
-                data[username]["password"] = command[3]
-                write_database("database.json", data)
-        elif(len(command == 3)):
-            pass
-        else:
-            sendmessage()
+    elif(command[0] == "reset"):
+        if(len(command) == 1):
+            await sendmessage(update, "reset requires atleast 1 arguments \ntype '/help root' to see more options")
+        elif(command[1] == "password"):
+
+            if(len(command) < 3):
+                await sendmessage(update, "reset password requires atleast 1 arguments '[old password] <new password>' \ntype '/help root' to see more options")
+
+            elif(len(command) == 4):
+                data = read_database("database.json")
+                username = getusername(update)
+                if(command[2] == data[username]["password"]):
+                    data[username]["password"] = command[3]
+                    write_database("database.json", data)
+            elif(len(command == 3)):
+                pass
 
     # command to show/delete prompts from databse
     elif(command[0] == "prompt"):
-        if(command[1] == "show"):
+        if(len(command) < 2):
+            await sendmessage(update, "prompt requires 1 argument 'show/delete' \ntype '/help root' to see more options")
+        elif(command[1] == "show"):
             data = read_database("database.json")
             current_login = data[getusername(update)]["current_login"]
             prompts = data[current_login]["prompt"]
