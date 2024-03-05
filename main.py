@@ -124,14 +124,38 @@ async def imagine_command(update:Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 # help command function
 async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> None:
-    print(update.message.chat.id, update.message.chat_id)
-    await sendmessage(update, """
-    Casanova is a bot powered by Python to generate image
-    List of commands:
-        -> /root
-        -> /imagine
-    type '/help [command]' to get more details about the command
-    """)
+    command = update.message.text("/help ", "").split() # /help root; command = [root]
+    
+    if(command[0] == "/help"):
+        await sendmessage(update, """
+        Casanova is a bot powered by Python to generate image
+        List of commands:
+            -> /root - To manage account data, available arguments [init, login, prompt, reset, user].
+            -> /imagine -> To generate image.
+        type '/help [command]' to get more details about the command.
+        """)
+    # /help root
+    elif(command[0] == "root"):
+        await sendmessage(update, """
+        Root command gives you access and manage user data.
+        List of root commads:
+            -> init (user) <password> - To initalize a new user.
+            -> login <username> <password> - To login into a account.
+            -> prompt (show, delete) [number] - 
+            -> reset (password) [old password] <new password> - 
+        """)
+
+    # /help imagine
+    elif():
+        pass
+
+
+
+    """
+    /help root -> full details about the root command and it's argument
+    /help imagine -> full details about the imagine command
+    """
+
 
 # run if main
 if __name__=='__main__':
