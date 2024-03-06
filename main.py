@@ -167,7 +167,7 @@ async def help_command(update:Update,  context:ContextTypes.DEFAULT_TYPE) -> Non
     
     if(command[0] == "/help"):
         await sendmessage(update, """
-        Casanova is a bot powered by Python to generate image
+        Casanova is a Telegram bot powered by Fooocus to generate image
         List of commands:
             -> /root - To manage account data, available arguments [init, login, prompt, reset, user].
             -> /imagine -> To generate image.

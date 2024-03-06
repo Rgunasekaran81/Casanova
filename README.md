@@ -1,3 +1,5 @@
-### Casanova
+## Casanova
 
-A Telegram bot to Generate image. 
+## A Telegram bot to Generate image. 
+
+Powered by Fooocus.
